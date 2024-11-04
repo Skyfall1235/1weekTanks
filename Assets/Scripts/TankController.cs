@@ -8,6 +8,8 @@ public class TankController : NetworkBehaviour
     InputAction move;
     InputAction fire;
     Rigidbody rb;
+    [SerializeField] GameObject projectile;
+    [SerializeField] Transform firePoint;
     [SerializeField] float m_speed;
     [SerializeField] float m_rotationSpeed;
     
@@ -19,11 +21,16 @@ public class TankController : NetworkBehaviour
     void OnEnable()
     {
         move = playerInputActions.Player.Move;
-        move.Enable();     
+        move.Enable();
+
+        fire = playerInputActions.Player.Attack;
+        fire.Enable();
+        fire.performed += Shoot;
     }
     void OnDisable()
     {
         move.Disable();
+        fire.Disable();
     }
     public override void OnNetworkSpawn()
     {
@@ -35,7 +42,7 @@ public class TankController : NetworkBehaviour
     }
     void Shoot(InputAction.CallbackContext context)
     {
-        
+        Fire();
     }
     private void FixedUpdate() 
     {
@@ -53,5 +60,31 @@ public class TankController : NetworkBehaviour
             newPosition += transform.forward * desiredMoveDirection.magnitude * Time.deltaTime * m_speed;    
         }
         rb.Move(newPosition, newRotation);
+    }
+
+    [ServerRpc]
+    private void OnFireShellServerRPC()
+    {
+        OnFireShell();
+    }
+    void OnFireShell()
+    {
+        NetworkObject newProjectile = Instantiate(projectile, firePoint.position, firePoint.rotation).GetComponent<NetworkObject>();
+        newProjectile.Spawn();
+    }
+    void Fire()
+    {
+        if(!IsOwner)
+        {
+            return;
+        }
+        if(IsServer)
+        {
+            OnFireShell();
+        }
+        else
+        {
+            OnFireShellServerRPC();
+        }
     }
 }
