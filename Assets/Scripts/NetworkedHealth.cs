@@ -20,4 +20,6 @@ public class NetworkedHealth : NetworkBehaviour
     {
         baseHealth -= damageToDeal;
     }
+
+
 }

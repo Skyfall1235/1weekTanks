@@ -1,15 +1,19 @@
+using System;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 [RequireComponent(typeof(Rigidbody))]
 public class TankController : NetworkBehaviour
 {
     PlayerInputActions playerInputActions;
-    InputAction move;
-    InputAction fire;
+    [SerializeField] InputAction move;
+    [SerializeField] InputAction fire;
     Rigidbody rb;
     [SerializeField] float m_speed;
     [SerializeField] float m_rotationSpeed;
+    [SerializeField] GameObject instantPoint;
+    [SerializeField] GameObject bullet;
     
     void Awake()
     {
@@ -19,11 +23,14 @@ public class TankController : NetworkBehaviour
     void OnEnable()
     {
         move = playerInputActions.Player.Move;
-        move.Enable();     
+        fire = playerInputActions.Player.Attack;
+        move.Enable();  
+        fire.Enable();
     }
     void OnDisable()
     {
         move.Disable();
+        fire.Disable();
     }
     public override void OnNetworkSpawn()
     {
@@ -33,10 +40,11 @@ public class TankController : NetworkBehaviour
             Camera.main.GetComponent<CameraFollow>().objectToFollow = gameObject.transform;
         }
     }
-    void Shoot(InputAction.CallbackContext context)
+    void Shoot()
     {
         
     }
+
     private void FixedUpdate() 
     {
         if(!IsOwner)
@@ -54,4 +62,68 @@ public class TankController : NetworkBehaviour
         }
         rb.Move(newPosition, newRotation);
     }
+
+    private void Update()
+    {
+        if(!IsOwner) { return; }
+        if(fire.triggered)
+        {
+            FireWeapon();
+            return;
+            if (IsServer)
+            {
+                SpawnShell();
+            }
+            else
+            {
+                SpawnShellServerRpc();
+            }
+        }
+    }
+
+    [ServerRpc]
+    private void SpawnShellServerRpc()
+    {
+        SpawnShell();
+    }
+
+    private void SpawnShell()
+    {
+        // Instantiate the object on the server
+        var spawnedObject = Instantiate(bullet, instantPoint.transform.position, instantPoint.transform.rotation);
+        // Spawn the NetworkObject on all clients
+        spawnedObject.GetComponent<NetworkObject>().Spawn();
+    }
+
+    public void FireWeapon()
+    {
+        if (!IsOwner)
+        {
+            return;
+        }
+
+
+        if (IsServer)
+        {
+            OnFireWeapon();
+        }
+        else
+        {
+            OnFireWeaponServerRpc();
+        }
+    }
+
+
+    [ServerRpc]
+    private void OnFireWeaponServerRpc()
+    {
+        OnFireWeapon();
+    }
+
+
+    private void OnFireWeapon()
+    {
+        SpawnShell();
+    }
+
 }

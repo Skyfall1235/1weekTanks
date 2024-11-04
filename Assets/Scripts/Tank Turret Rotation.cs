@@ -7,24 +7,21 @@ public class TankTurretRotation : NetworkBehaviour
     [SerializeField] float rotationSpeed;
     PlayerInputActions playerInputActions;
     InputAction cursorLook;
+    Camera cameraForAim;
     NetworkVariable<short> m_rotation = new(writePerm: NetworkVariableWritePermission.Owner);
     float rotationalVelocity;
     short Rotation
     {
-        get
-        {
-            return m_rotation.Value;
-        }
+        get {return m_rotation.Value; }
         set
         {
-
             m_rotation.Value = value;
             transform.rotation = Quaternion.Euler(0, m_rotation.Value, 0);
             UpdateTurretRotationRPC();
-            
         }
     }
-    Camera cameraForAim;
+    
+
     void Awake()
     {
         playerInputActions = new PlayerInputActions();
