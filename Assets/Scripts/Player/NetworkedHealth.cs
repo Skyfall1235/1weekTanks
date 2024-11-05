@@ -1,23 +1,35 @@
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class NetworkedHealth : NetworkBehaviour
-{
-    [SerializeField] int baseHealth = 100;
-    NetworkVariable<int> health = new(writePerm: NetworkVariableWritePermission.Owner);
-    public bool isAlive => health.Value > 0; 
+public class NetworkedHealth : NetworkBehaviour, IDamagable
+{ 
+    public UnityEvent<ulong> DeathEvent = new UnityEvent<ulong>();
 
-    void Start()
+    public virtual void OnHit(ulong Damager)
     {
-        if(IsOwner)
-        {
-            health.Value = baseHealth;
-        }
+        //Debug.Log($"{Damager} hit {NetworkObjectId}");
+        DeathEvent.Invoke(Damager);
+        DespawnTank();
     }
-    
-    [Rpc(SendTo.Owner)]
-    public void DamageHealthRPC(int damageToDeal)
+
+    //this despawns the tank depending on what client/host it is
+    protected virtual void DespawnTank()
     {
-        baseHealth -= damageToDeal;
+        if (!IsOwner) { return; }
+        if (IsServer) { OnDespawnObject(); }
+        else { OnDespawnObjectServerRPC(); }
+    }
+
+    [ServerRpc]//called on the server, not on client
+    void OnDespawnObjectServerRPC()
+    {
+        OnDespawnObject();
+    }
+
+    void OnDespawnObject()
+    {
+        //we need to destroy it on our side only after we tel lthe server that we need to destroy it.
+        NetworkObject.Despawn(true);
     }
 }

@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: b520098a09a996649a68def8b69bffe1
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 124507
+  packageName: Desert - Low Poly Toon Battle Arena / Tower Defense Pack
+  packageVersion: 1.1
+  assetPath: Assets/AurynSky/Desert Pack/Scripts/MaterialMover.cs
+  uploadId: 326339

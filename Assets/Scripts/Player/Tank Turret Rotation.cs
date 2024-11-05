@@ -8,6 +8,7 @@ public class TankTurretRotation : NetworkBehaviour
     PlayerInputActions playerInputActions;
     InputAction cursorLook;
     NetworkVariable<short> m_rotation = new(writePerm: NetworkVariableWritePermission.Owner);
+
     float rotationalVelocity;
     short Rotation
     {
@@ -24,6 +25,9 @@ public class TankTurretRotation : NetworkBehaviour
             
         }
     }
+
+    short lastAngle = 0;
+
     Camera cameraForAim;
     void Awake()
     {
@@ -44,7 +48,12 @@ public class TankTurretRotation : NetworkBehaviour
                 worldAimPoint.y = transform.position.y;
                 desiredRotation = Quaternion.LookRotation(worldAimPoint - transform.position, transform.up);
             }
-            Rotation = (short)Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * Time.deltaTime).eulerAngles.y;
+            short NewRotation = (short)Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * Time.deltaTime).eulerAngles.y;
+            if (NewRotation != lastAngle)
+            {
+                Rotation = NewRotation;
+            }
+            lastAngle = NewRotation;
         }
     }
     private void OnEnable()

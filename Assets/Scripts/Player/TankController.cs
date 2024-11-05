@@ -1,4 +1,5 @@
 using Unity.Netcode;
+using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
@@ -67,11 +68,14 @@ public class TankController : NetworkBehaviour
     {
         OnFireShell();
     }
+
     void OnFireShell()
     {
         NetworkObject newProjectile = Instantiate(projectile, firePoint.position, firePoint.rotation).GetComponent<NetworkObject>();
-        newProjectile.Spawn();
+        newProjectile.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
+        newProjectile.gameObject.GetComponent<Projectile>().spawnerID = OwnerClientId;
     }
+
     void Fire()
     {
         if(!IsOwner)

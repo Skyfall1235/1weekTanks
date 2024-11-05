@@ -8,6 +8,7 @@ public class Projectile : NetworkBehaviour
     Rigidbody rb;
     float timeBeforeDespawn = 2;
     float projectileSpeed = 10;
+    public ulong spawnerID = 1000;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();    
@@ -19,12 +20,14 @@ public class Projectile : NetworkBehaviour
         rb.AddForce(transform.forward * projectileSpeed, ForceMode.Impulse);
         StartCoroutine(DespawnAfterTime());
     }
+
     IEnumerator DespawnAfterTime()
     {
         yield return new WaitForSeconds(timeBeforeDespawn);
         DespawnProjectile();
     }
-    void DespawnProjectile()
+
+    protected virtual void DespawnProjectile()
     {
         if(!IsOwner)
         {
@@ -40,14 +43,25 @@ public class Projectile : NetworkBehaviour
         }
     }
 
-    [ServerRpc]
+    [ServerRpc]//called on the server, not on client
     void OnDespawnObjectServerRPC()
     {
         OnDespawnObject();
     }
+
     void OnDespawnObject()
     {
-        NetworkObject.Despawn();
-        Destroy(gameObject);
+        NetworkObject.Despawn(true);
+    }
+
+    protected virtual void OnCollisionEnter(Collision collision)
+    {
+        if (IsOwner) return;
+
+        IDamagable collided = collision.gameObject.GetComponent<IDamagable>(); 
+        if(collided != null)
+        {
+            collided.OnHit(spawnerID);
+        }
     }
 }
