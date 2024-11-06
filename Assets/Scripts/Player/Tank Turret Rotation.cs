@@ -1,10 +1,11 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.InputSystem;
+using System;
 
 public class TankTurretRotation : NetworkBehaviour
 {
-    [SerializeField] float rotationSpeed;
+    [SerializeField] float rotationSpeed = 6;
     PlayerInputActions playerInputActions;
     InputAction cursorLook;
     NetworkVariable<short> m_rotation = new(writePerm: NetworkVariableWritePermission.Owner);
@@ -21,8 +22,6 @@ public class TankTurretRotation : NetworkBehaviour
 
             m_rotation.Value = value;
             transform.rotation = Quaternion.Euler(0, m_rotation.Value, 0);
-            UpdateTurretRotationRPC();
-            
         }
     }
 
@@ -33,7 +32,18 @@ public class TankTurretRotation : NetworkBehaviour
     {
         playerInputActions = new PlayerInputActions();
         cameraForAim = Camera.main;
+        if(IsOwner)
+        {
+            lastAngle = (short)transform.rotation.eulerAngles.y;
+        }
     }
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
+    }
+
+
+
     private void FixedUpdate()
     {
         if(IsOwner)
@@ -48,12 +58,16 @@ public class TankTurretRotation : NetworkBehaviour
                 worldAimPoint.y = transform.position.y;
                 desiredRotation = Quaternion.LookRotation(worldAimPoint - transform.position, transform.up);
             }
-            short NewRotation = (short)Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * Time.deltaTime).eulerAngles.y;
-            if (NewRotation != lastAngle)
+            short newRotation = (short)Quaternion.RotateTowards(transform.rotation, desiredRotation, rotationSpeed * Time.deltaTime).eulerAngles.y;
+            if(newRotation != lastAngle)
             {
-                Rotation = NewRotation;
+                Rotation = newRotation;
+                lastAngle = Rotation;
             }
-            lastAngle = NewRotation;
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, Mathf.SmoothDampAngle(transform.rotation.eulerAngles.y, Rotation, ref rotationalVelocity, 0.1f), 0);
         }
     }
     private void OnEnable()
@@ -64,10 +78,5 @@ public class TankTurretRotation : NetworkBehaviour
     private void OnDisable() 
     {
         cursorLook.Disable();
-    }
-    [Rpc(SendTo.NotOwner)]
-    void UpdateTurretRotationRPC()
-    {
-        transform.rotation = Quaternion.Euler(0, Mathf.SmoothDampAngle(transform.rotation.eulerAngles.y, Rotation, ref rotationalVelocity, 0.01f), 0);
     }
 }
