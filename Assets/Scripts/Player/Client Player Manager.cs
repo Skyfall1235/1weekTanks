@@ -57,14 +57,18 @@ public class ClientPlayerManager : NetworkBehaviour
         {
             SpawnTank(transform.position, transform.rotation);
         }
+        Debug.Assert(currentTank != null);
         if(CurrentTank != null)
         {
+            Debug.Log("current tank is not null");
             CurrentTank.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
+            
         }
     }
     void OnTankDeath(ulong damager)
     {
-        if(CurrentTank != null)
+        Debug.Log("tank should die");
+        if (CurrentTank != null)
         {
             DespawnTank(CurrentTank);
         }
@@ -110,7 +114,7 @@ public class ClientPlayerManager : NetworkBehaviour
     [ServerRpc]
     void DespawnObjectServerRPC()
     {
-        NetworkObject.Despawn();
+        NetworkObject.Despawn(true);
     }
 
     [ServerRpc]

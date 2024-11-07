@@ -56,12 +56,19 @@ public class Projectile : NetworkBehaviour
 
     protected virtual void OnCollisionEnter(Collision collision)
     {
-        if (IsOwner) return;
+        IDamagable collided = collision.gameObject.GetComponent<IDamagable>();
+        if(collided == null) 
+        { 
+            DespawnProjectile(); 
+            return; 
+        }
+        NetworkBehaviour conversion = (NetworkBehaviour)collided;
+        if (conversion.OwnerClientId == OwnerClientId) { return; }
 
-        IDamagable collided = collision.gameObject.GetComponent<IDamagable>(); 
-        if(collided != null)
+        if (collided != null)
         {
             collided.OnHit(spawnerID);
         }
+        DespawnProjectile();
     }
 }

@@ -8,7 +8,7 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
 
     public virtual void OnHit(ulong Damager)
     {
-        //Debug.Log($"{Damager} hit {NetworkObjectId}");
+        Debug.Log($"{Damager} hit {OwnerClientId}");
         DeathEvent.Invoke(Damager);
     }
 }
