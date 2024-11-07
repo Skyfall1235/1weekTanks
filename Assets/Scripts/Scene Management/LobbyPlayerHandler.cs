@@ -6,7 +6,7 @@ using UnityEngine;
 public class LobbyPlayerHandler : NetworkBehaviour
 {
     // Store the incoming connections
-    public static NetworkVariable<Dictionary<ulong, FixedString32Bytes>> PlayerData = new NetworkVariable<Dictionary<ulong, FixedString32Bytes>>(new Dictionary<ulong, FixedString32Bytes>());
+    public NetworkVariable<Dictionary<ulong, FixedString32Bytes>> PlayerData = new NetworkVariable<Dictionary<ulong, FixedString32Bytes>>(new Dictionary<ulong, FixedString32Bytes>());
     public string PlayerName;
 
     private static bool eventsRegistered = false;
