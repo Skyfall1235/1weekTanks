@@ -57,14 +57,25 @@ public class ClientPlayerManager : NetworkBehaviour
         {
             SpawnTank(transform.position, transform.rotation);
         }
-        Debug.Assert(currentTank != null);
         if(CurrentTank != null)
         {
             Debug.Log("current tank is not null");
-            CurrentTank.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
-            
+            SendListenerToClientRPC(CurrentTank.NetworkObjectId);
+            //CurrentTank.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
         }
     }
+
+    [ClientRpc]
+    void SendListenerToClientRPC(ulong objectId)
+    {
+        //set objectids object to add  the listener?
+        NetworkObject output;
+        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectId, out output))
+        {
+            output.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
+        }
+    }
+
     void OnTankDeath(ulong damager)
     {
         Debug.Log("tank should die");
