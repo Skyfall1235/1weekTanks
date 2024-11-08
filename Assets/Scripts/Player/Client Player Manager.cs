@@ -7,19 +7,8 @@ using System.Linq;
 public class ClientPlayerManager : NetworkBehaviour
 {
     [SerializeField] GameObject playerPrefab;
-    NetworkVariable<NetworkObjectReference> currentTank = new();
-    NetworkObject CurrentTank
-    {
-        get
-        {
-            currentTank.Value.TryGet(out NetworkObject tankNetworkObject, NetworkManager);
-            return tankNetworkObject;
-        }
-        set
-        {
-            currentTank.Value = value;
-        }
-    }
+    NetworkVariable<NetworkObjectReference> currentTank = new(writePerm: NetworkVariableWritePermission.Server);
+
     List<GameObject> spawnPositions = new List<GameObject>();
     [SerializeField]Vector3 spawnCheckBoxHalfExtents;
     public override void OnNetworkSpawn()
@@ -28,52 +17,39 @@ public class ClientPlayerManager : NetworkBehaviour
         if(IsOwner)
         {
             spawnPositions = GameObject.FindGameObjectsWithTag("Spawn").ToList();
-            SpawnTankAtSpawnPoint();
+            StartCoroutine(SpawnTankAtRandomSpawnpoint());
         }
     }
-
-    void SpawnTankAtSpawnPoint()
+    IEnumerator SpawnTankAtRandomSpawnpoint()
     {
-        //Remove any existing tanks if the tank still exists
-        if(CurrentTank != null)
+        Vector3 currentSpawnPosition = transform.position;
+        Quaternion currentSpawnRotation = transform.rotation;
+        List<GameObject> uncheckedSpawnPositions = new List<GameObject>(spawnPositions);
+        while(uncheckedSpawnPositions.Count > 0)
         {
-            DespawnTank(CurrentTank);
-        }
-        if(spawnPositions.Count > 0)
-        {
-            for(int i = 0; i < spawnPositions.Count; i++)
+            int spawnIndex = Random.Range(0, uncheckedSpawnPositions.Count);
+            if(!Physics.BoxCast(uncheckedSpawnPositions[spawnIndex].transform.position + new Vector3(0, spawnCheckBoxHalfExtents.y, 0), spawnCheckBoxHalfExtents, uncheckedSpawnPositions[spawnIndex].transform.forward))
             {
-                if(Physics.BoxCast(spawnPositions[i].transform.position + new Vector3(0, spawnCheckBoxHalfExtents.y, 0), spawnCheckBoxHalfExtents, spawnPositions[i].transform.forward, spawnPositions[i].transform.rotation))
-                {
-                    SpawnTank(spawnPositions[i].transform.position, spawnPositions[i].transform.rotation);
-                }
-                else if(i == spawnPositions.Count - 1)
-                {
-                    SpawnTank(transform.position, transform.rotation);
-                }
+                currentSpawnPosition = uncheckedSpawnPositions[spawnIndex].transform.position;
+                currentSpawnRotation = uncheckedSpawnPositions[spawnIndex].transform.rotation;
+                break;
             }
-        }
-        else
-        {
-            SpawnTank(transform.position, transform.rotation);
-        }
-        Debug.Assert(currentTank != null);
-        if(CurrentTank != null)
-        {
-            Debug.Log("current tank is not null");
-            CurrentTank.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
-            
-        }
+            else
+            {
+                uncheckedSpawnPositions.RemoveAt(spawnIndex);
+            }
+        } 
+        SpawnTank(currentSpawnPosition, currentSpawnRotation);
+        yield return new WaitUntil(CheckForUpdateNetworkObject);
+        currentTank.Value.TryGet(out NetworkObject foundObject);
+        foundObject.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(e => DespawnTank());
     }
-    void OnTankDeath(ulong damager)
+    bool CheckForUpdateNetworkObject()
     {
-        Debug.Log("tank should die");
-        if (CurrentTank != null)
-        {
-            DespawnTank(CurrentTank);
-        }
+        currentTank.Value.TryGet(out NetworkObject foundObject);
+        return foundObject != null;
     }
-    void DespawnTank(NetworkObject tank)
+    void DespawnTank()
     {
         if(!IsOwner)
         {
@@ -81,7 +57,8 @@ public class ClientPlayerManager : NetworkBehaviour
         }
         if(IsServer)
         {
-            tank.Despawn();
+            currentTank.Value.TryGet(out NetworkObject foundObject);
+            foundObject.Despawn();
         }
         else
         {
@@ -107,14 +84,15 @@ public class ClientPlayerManager : NetworkBehaviour
     {
         NetworkObject spawnedTank = Instantiate(playerPrefab, spawnLocation, spawnRotation).GetComponent<NetworkObject>();
         spawnedTank.SpawnWithOwnership(clientID);
-        CurrentTank = spawnedTank;
+        currentTank.Value = new NetworkObjectReference(spawnedTank);
     }
 
     #region RPC Calls
     [ServerRpc]
     void DespawnObjectServerRPC()
     {
-        NetworkObject.Despawn(true);
+        currentTank.Value.TryGet(out NetworkObject foundObject);
+        foundObject.Despawn();
     }
 
     [ServerRpc]
