@@ -8,8 +8,8 @@ public class ClientPlayerManager : NetworkBehaviour
 {
     [SerializeField] GameObject playerPrefab;
     NetworkVariable<NetworkObjectReference> currentTank = new(writePerm: NetworkVariableWritePermission.Server);
-
     List<GameObject> spawnPositions = new List<GameObject>();
+    [SerializeField] float respawnTime =  2;
     [SerializeField]Vector3 spawnCheckBoxHalfExtents;
     public override void OnNetworkSpawn()
     {
@@ -42,7 +42,17 @@ public class ClientPlayerManager : NetworkBehaviour
         SpawnTank(currentSpawnPosition, currentSpawnRotation);
         yield return new WaitUntil(CheckForUpdateNetworkObject);
         currentTank.Value.TryGet(out NetworkObject foundObject);
-        foundObject.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(e => DespawnTank());
+        foundObject.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
+    }
+    void OnTankDeath(ulong damager)
+    {
+        DespawnTank();
+        StartCoroutine(RespawnTankAfterTime());
+    }
+    IEnumerator RespawnTankAfterTime()
+    {
+        yield return new WaitForSeconds(respawnTime);
+        yield return SpawnTankAtRandomSpawnpoint();
     }
     bool CheckForUpdateNetworkObject()
     {
