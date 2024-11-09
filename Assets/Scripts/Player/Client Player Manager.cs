@@ -10,7 +10,10 @@ public class ClientPlayerManager : NetworkBehaviour
     NetworkVariable<NetworkObjectReference> currentTank = new(writePerm: NetworkVariableWritePermission.Server);
     List<GameObject> spawnPositions = new List<GameObject>();
     [SerializeField] float respawnTime =  2;
+    bool canRespawn = true;
     [SerializeField]Vector3 spawnCheckBoxHalfExtents;
+
+    #region network specific
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -20,6 +23,19 @@ public class ClientPlayerManager : NetworkBehaviour
             StartCoroutine(SpawnTankAtRandomSpawnpoint());
         }
     }
+    bool CheckForUpdateNetworkObject()
+    {
+        currentTank.Value.TryGet(out NetworkObject foundObject);
+        return foundObject != null;
+    }
+    #endregion
+
+    public void HandleSceneTransition()
+    {
+        canRespawn = false;
+    }
+
+
     IEnumerator SpawnTankAtRandomSpawnpoint()
     {
         Vector3 currentSpawnPosition = transform.position;
@@ -49,16 +65,30 @@ public class ClientPlayerManager : NetworkBehaviour
         DespawnTank();
         StartCoroutine(RespawnTankAfterTime());
     }
+
+    #region Respawning Tank
+    void RespawnTank()
+    {
+        CheckCanRespawn(RespawnTankAfterTime());
+    }
     IEnumerator RespawnTankAfterTime()
     {
+        
         yield return new WaitForSeconds(respawnTime);
         yield return SpawnTankAtRandomSpawnpoint();
     }
-    bool CheckForUpdateNetworkObject()
+    IEnumerator CheckCanRespawn(IEnumerator continuation)
     {
-        currentTank.Value.TryGet(out NetworkObject foundObject);
-        return foundObject != null;
+        while (!canRespawn)
+        {
+            yield return null;
+        }
+        StartCoroutine(continuation);
     }
+
+    #endregion
+
+    #region Spawn of tank
     void DespawnTank()
     {
         if(!IsOwner)
@@ -96,6 +126,7 @@ public class ClientPlayerManager : NetworkBehaviour
         spawnedTank.SpawnWithOwnership(clientID);
         currentTank.Value = new NetworkObjectReference(spawnedTank);
     }
+    #endregion
 
     #region RPC Calls
     [ServerRpc]
