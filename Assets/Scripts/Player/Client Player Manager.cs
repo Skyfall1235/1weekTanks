@@ -60,30 +60,17 @@ public class ClientPlayerManager : NetworkBehaviour
         if(CurrentTank != null)
         {
             Debug.Log("current tank is not null");
-            SendListenerToClientRPC(CurrentTank.NetworkObjectId);
-            //CurrentTank.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
         }
     }
 
-    [ClientRpc]
-    void SendListenerToClientRPC(ulong objectId)
+    public void OnTankDeath(ulong damager)
     {
-        //set objectids object to add  the listener?
-        NetworkObject output;
-        if (NetworkManager.Singleton.SpawnManager.SpawnedObjects.TryGetValue(objectId, out output))
-        {
-            output.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
-        }
-    }
-
-    void OnTankDeath(ulong damager)
-    {
-        Debug.Log("tank should die");
         if (CurrentTank != null)
         {
             DespawnTank(CurrentTank);
         }
     }
+
     void DespawnTank(NetworkObject tank)
     {
         if(!IsOwner)
@@ -99,6 +86,7 @@ public class ClientPlayerManager : NetworkBehaviour
             DespawnObjectServerRPC();
         }
     }
+
     void SpawnTank(Vector3 spawnLocation, Quaternion spawnRotation)
     {
         if(!IsOwner)
@@ -114,9 +102,13 @@ public class ClientPlayerManager : NetworkBehaviour
             SpawnObjectServerRPC(spawnLocation, spawnRotation, OwnerClientId);
         }
     }
+
     void OnTankSpawn(Vector3 spawnLocation, Quaternion spawnRotation, ulong clientID)
     {
         NetworkObject spawnedTank = Instantiate(playerPrefab, spawnLocation, spawnRotation).GetComponent<NetworkObject>();
+        NetworkedHealth tankHealth = spawnedTank.GetComponent<NetworkedHealth>();
+        tankHealth.manager = this;
+
         spawnedTank.SpawnWithOwnership(clientID);
         CurrentTank = spawnedTank;
     }
