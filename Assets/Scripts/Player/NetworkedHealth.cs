@@ -17,4 +17,6 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
         Debug.Log(damager);
         DeathEvent.Invoke(damager, OwnerClientId);
     }
+
+
 }
