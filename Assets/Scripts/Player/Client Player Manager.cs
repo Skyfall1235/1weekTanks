@@ -7,7 +7,7 @@ using System.Linq;
 public class ClientPlayerManager : NetworkBehaviour
 {
     [SerializeField] GameObject playerPrefab;
-    NetworkVariable<NetworkObjectReference> currentTank = new(writePerm: NetworkVariableWritePermission.Server);
+    public NetworkVariable<NetworkObjectReference> currentTank = new(writePerm: NetworkVariableWritePermission.Server);
     List<GameObject> spawnPositions = new List<GameObject>();
     [SerializeField] float respawnTime =  2;
     bool canRespawn = true;
@@ -35,7 +35,6 @@ public class ClientPlayerManager : NetworkBehaviour
         canRespawn = false;
     }
 
-
     IEnumerator SpawnTankAtRandomSpawnpoint()
     {
         Vector3 currentSpawnPosition = transform.position;
@@ -44,7 +43,7 @@ public class ClientPlayerManager : NetworkBehaviour
         while(uncheckedSpawnPositions.Count > 0)
         {
             int spawnIndex = Random.Range(0, uncheckedSpawnPositions.Count);
-            if(!Physics.BoxCast(uncheckedSpawnPositions[spawnIndex].transform.position + new Vector3(0, spawnCheckBoxHalfExtents.y, 0), spawnCheckBoxHalfExtents, uncheckedSpawnPositions[spawnIndex].transform.forward))
+            if (!Physics.BoxCast(uncheckedSpawnPositions[spawnIndex].transform.position + new Vector3(0, spawnCheckBoxHalfExtents.y, 0), spawnCheckBoxHalfExtents, uncheckedSpawnPositions[spawnIndex].transform.forward, Quaternion.identity, 0f, LayerMask.GetMask("Tank")))
             {
                 currentSpawnPosition = uncheckedSpawnPositions[spawnIndex].transform.position;
                 currentSpawnRotation = uncheckedSpawnPositions[spawnIndex].transform.rotation;
@@ -60,23 +59,32 @@ public class ClientPlayerManager : NetworkBehaviour
         currentTank.Value.TryGet(out NetworkObject foundObject);
         foundObject.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
     }
-    void OnTankDeath(ulong damager)
+    void OnTankDeath(ulong inflictor, ulong inflictee)
     {
+        StartCoroutine(KillTankAfterDelay());
+    }
+
+    #region Respawning Tank
+
+    IEnumerator KillTankAfterDelay()
+    {
+        yield return new WaitForSeconds(2.5f);
         DespawnTank();
         StartCoroutine(RespawnTankAfterTime());
     }
 
-    #region Respawning Tank
+    IEnumerator RespawnTankAfterTime()
+    {
+
+        yield return new WaitForSeconds(respawnTime);
+        yield return SpawnTankAtRandomSpawnpoint();
+    }
+
     void RespawnTank()
     {
         CheckCanRespawn(RespawnTankAfterTime());
     }
-    IEnumerator RespawnTankAfterTime()
-    {
-        
-        yield return new WaitForSeconds(respawnTime);
-        yield return SpawnTankAtRandomSpawnpoint();
-    }
+
     IEnumerator CheckCanRespawn(IEnumerator continuation)
     {
         while (!canRespawn)

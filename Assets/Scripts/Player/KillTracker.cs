@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEditor;
@@ -7,13 +6,15 @@ using UnityEngine;
 //this script is to keep track of who kills who, in the event of us wanting to keep track of kills for teams, or FFA
 public class KillTracker : NetworkBehaviour
 {
+    ClientPlayerManager playerManager;
     NetworkVariable<List<KillData>> playerKillData = new NetworkVariable<List<KillData>>();
 
     //tells the server theres a new kill and to add it to the kill track
     [ServerRpc]
     void SendServerKillServerRPC(ulong inflictor, ulong inflictee)
     {
-
+        Debug.Log("sending the server rpc to kill myself");
+        playerKillData.Value.Add(new KillData { inflictor = inflictor, inflictee = inflictee });
     }
 
     void Start()
@@ -23,6 +24,11 @@ public class KillTracker : NetworkBehaviour
         {
             UpdateUI(currentValue);
         };
+        if(playerManager.currentTank != null) 
+        {
+            playerManager.currentTank.Value.TryGet(out NetworkObject foundObject);
+            foundObject.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(SendServerKillServerRPC);
+        }
         
     }
 
@@ -35,7 +41,8 @@ public class KillTracker : NetworkBehaviour
     [ClientRpc]
     void OnSceneLoadClientRPC()
     {
-        //clear the network variable :) or maybe the UI, idk
+        // Clear the UI or reset the kill data
+        UpdateUI(new List<KillData>());
     }
 
     //this should handle the ui script. that can be a dif object but it will need a link here.
