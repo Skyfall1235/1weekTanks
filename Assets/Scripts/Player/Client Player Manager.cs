@@ -11,7 +11,7 @@ public class ClientPlayerManager : NetworkBehaviour
     List<GameObject> spawnPositions = new List<GameObject>();
     [SerializeField] float respawnTime =  2;
     bool canRespawn = true;
-    [SerializeField]Vector3 spawnCheckBoxHalfExtents;
+    [SerializeField]Vector3 spawnCheckBoxHalfExtents = new Vector3(.5f, .25f, .5f);
 
     #region network specific
     public override void OnNetworkSpawn()

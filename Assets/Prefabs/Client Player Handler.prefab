@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7321821916256508250}
   - component: {fileID: 4902828494065659651}
   - component: {fileID: 8707959941632511078}
+  - component: {fileID: -3539166695097288709}
   m_Layer: 0
   m_Name: Client Player Handler
   m_TagString: Untagged
@@ -72,4 +73,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   playerPrefab: {fileID: 7564236676250682404, guid: eef12de941faed34185d58066e0d4b60, type: 3}
-  spawnCheckBoxHalfExtents: {x: 1, y: 1, z: 1}
+  respawnTime: 2
+  spawnCheckBoxHalfExtents: {x: 0.5, y: 0.25, z: 0.5}
+--- !u!114 &-3539166695097288709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1303124068377314551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7d3e26632d2867e4f89985da215e8062, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  PlayerName: Test1

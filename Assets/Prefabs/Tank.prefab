@@ -259,7 +259,6 @@ GameObject:
   - component: {fileID: 7960480362012587337}
   - component: {fileID: 3700269372651610586}
   - component: {fileID: 7516222809594520626}
-  - component: {fileID: 578499358698853793}
   - component: {fileID: 1985365931801660686}
   - component: {fileID: 98489178869186939}
   m_Layer: 0
@@ -476,20 +475,6 @@ MonoBehaviour:
   DeathEvent:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &578499358698853793
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7564236676250682404}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7d3e26632d2867e4f89985da215e8062, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  PlayerName: test1
 --- !u!82 &1985365931801660686
 AudioSource:
   m_ObjectHideFlags: 0

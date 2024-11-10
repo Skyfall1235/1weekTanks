@@ -11,7 +11,7 @@ public class KillTracker : NetworkBehaviour
 
     //tells the server theres a new kill and to add it to the kill track
     [ServerRpc]
-    void SendServerKill(ulong inflictor, ulong inflictee)
+    void SendServerKillServerRPC(ulong inflictor, ulong inflictee)
     {
 
     }
