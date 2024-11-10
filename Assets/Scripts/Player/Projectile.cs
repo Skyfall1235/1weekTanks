@@ -8,7 +8,6 @@ public class Projectile : NetworkBehaviour
     Rigidbody rb;
     float timeBeforeDespawn = 2;
     float projectileSpeed = 10;
-    public ulong spawnerID = 1000;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();    
@@ -67,7 +66,7 @@ public class Projectile : NetworkBehaviour
 
         if (collided != null)
         {
-            collided.OnHit(spawnerID);
+            collided.OnHit(OwnerClientId);
         }
         DespawnProjectile();
     }

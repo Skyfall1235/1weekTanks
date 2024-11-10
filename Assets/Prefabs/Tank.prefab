@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5956977945108540782}
   - component: {fileID: 403235407913060479}
   - component: {fileID: 1790508270503058209}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -109,6 +109,38 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &3893947527737507283
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8230715417648944816}
+  m_Layer: 10
+  m_Name: vfx
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8230715417648944816
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3893947527737507283}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 464746242657574919}
+  m_Father: {fileID: 2079099757433215514}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7178137215510450119
 GameObject:
   m_ObjectHideFlags: 0
@@ -118,7 +150,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3981401881868228542}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Fire Point
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -152,7 +184,7 @@ GameObject:
   - component: {fileID: 167413943074618949}
   - component: {fileID: 3725335518385505566}
   - component: {fileID: 2177946688309536803}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,7 +293,7 @@ GameObject:
   - component: {fileID: 7516222809594520626}
   - component: {fileID: 1985365931801660686}
   - component: {fileID: 98489178869186939}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Tank
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -282,6 +314,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 415780616490319516}
+  - {fileID: 8230715417648944816}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &1926656737123007759
@@ -474,7 +507,31 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   DeathEvent:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1953302849241152812}
+        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1985365931801660686}
+        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!82 &1985365931801660686
 AudioSource:
   m_ObjectHideFlags: 0
@@ -595,3 +652,82 @@ CapsuleCollider:
   m_Height: 5
   m_Direction: 1
   m_Center: {x: 0, y: 1.8678713, z: 0}
+--- !u!1001 &2365036919879312187
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 8230715417648944816}
+    m_Modifications:
+    - target: {fileID: 161868546088729217, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1349260844203267185, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.0000005
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4308196739926580759, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: playOnAwake
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4607406030129426724, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+      propertyPath: m_Name
+      value: Explosion Fire
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+--- !u!4 &464746242657574919 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2783594772313031484, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+  m_PrefabInstance: {fileID: 2365036919879312187}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &1953302849241152812 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 4308196739926580759, guid: 4533108e9efd6d247acfdf125f049d01, type: 3}
+  m_PrefabInstance: {fileID: 2365036919879312187}
+  m_PrefabAsset: {fileID: 0}
