@@ -61,14 +61,15 @@ public class ClientPlayerManager : NetworkBehaviour
     }
     void OnTankDeath(ulong inflictor, ulong inflictee)
     {
-        StartCoroutine(KillTankAfterDelay());
+        StartCoroutine(KillTankAfterDelay(inflictee));
     }
 
     #region Respawning Tank
 
-    IEnumerator KillTankAfterDelay()
+    IEnumerator KillTankAfterDelay(ulong inflictee)
     {
         yield return new WaitForSeconds(2.5f);
+        NotfityClientsOfDeathClientRPC(inflictee);
         DespawnTank();
         StartCoroutine(RespawnTankAfterTime());
     }
@@ -148,6 +149,12 @@ public class ClientPlayerManager : NetworkBehaviour
     void SpawnObjectServerRPC(Vector3 spawnLocation, Quaternion spawnRotation, ulong clientID)
     {
         OnTankSpawn(spawnLocation, spawnRotation, clientID);
+    }
+
+    [ClientRpc]
+    void NotfityClientsOfDeathClientRPC(ulong clientID)
+    {
+
     }
     #endregion
 }
