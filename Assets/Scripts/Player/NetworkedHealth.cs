@@ -6,9 +6,11 @@ using UnityEngine.Events;
 public class NetworkedHealth : NetworkBehaviour, IDamagable
 {
     public UnityEvent<ulong, ulong> DeathEvent = new UnityEvent<ulong, ulong>();
+    public UnityEvent DeathSFX = new UnityEvent();
     public virtual void OnHit(ulong damager)
     {
         OnHitEventRpc(damager);
+        OnDeathFxRPC();
     }
 
     [Rpc(SendTo.Owner)]
@@ -16,6 +18,12 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
     {
         Debug.Log(damager);
         DeathEvent.Invoke(damager, OwnerClientId);
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void OnDeathFxRPC()
+    {
+        DeathSFX.Invoke();
     }
 
 

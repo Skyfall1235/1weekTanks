@@ -9,6 +9,7 @@ public class KillTracker : NetworkBehaviour
     ClientPlayerManager playerManager;
     NetworkVariable<List<KillData>> playerKillData = new NetworkVariable<List<KillData>>();
 
+
     //tells the server theres a new kill and to add it to the kill track
     [ServerRpc]
     void SendServerKillServerRPC(ulong inflictor, ulong inflictee)

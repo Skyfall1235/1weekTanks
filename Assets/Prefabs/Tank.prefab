@@ -507,6 +507,9 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   DeathEvent:
     m_PersistentCalls:
+      m_Calls: []
+  DeathSFX:
+    m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1953302849241152812}
         m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
@@ -521,12 +524,12 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 1985365931801660686}
-        m_TargetAssemblyTypeName: UnityEngine.AudioSource, UnityEngine
-        m_MethodName: Play
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_ObjectArgumentAssemblyTypeName: 
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
