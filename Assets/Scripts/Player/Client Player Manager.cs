@@ -35,7 +35,6 @@ public class ClientPlayerManager : NetworkBehaviour
         canRespawn = false;
     }
 
-
     IEnumerator SpawnTankAtRandomSpawnpoint()
     {
         Vector3 currentSpawnPosition = transform.position;
