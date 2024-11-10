@@ -13,6 +13,7 @@ public class ClientPlayerManager : NetworkBehaviour
     bool canRespawn = true;
     [SerializeField]Vector3 spawnCheckBoxHalfExtents = new Vector3(.5f, .25f, .5f);
 
+
     #region network specific
     public override void OnNetworkSpawn()
     {
@@ -57,7 +58,9 @@ public class ClientPlayerManager : NetworkBehaviour
         SpawnTank(currentSpawnPosition, currentSpawnRotation);
         yield return new WaitUntil(CheckForUpdateNetworkObject);
         currentTank.Value.TryGet(out NetworkObject foundObject);
+        KillTracker tracker = GetComponent<KillTracker>();
         foundObject.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(OnTankDeath);
+        foundObject.gameObject.GetComponent<NetworkedHealth>().DeathEvent.AddListener(tracker.SendKillServerRPC);
     }
     void OnTankDeath(ulong inflictor, ulong inflictee)
     {
@@ -68,15 +71,14 @@ public class ClientPlayerManager : NetworkBehaviour
 
     IEnumerator KillTankAfterDelay(ulong inflictee)
     {
-        yield return new WaitForSeconds(2.5f);
-        NotfityClientsOfDeathClientRPC(inflictee);
+        const float DEATH_DELAY = 2.5f;
+        yield return new WaitForSeconds(DEATH_DELAY); // :)
         DespawnTank();
         StartCoroutine(RespawnTankAfterTime());
     }
 
     IEnumerator RespawnTankAfterTime()
     {
-
         yield return new WaitForSeconds(respawnTime);
         yield return SpawnTankAtRandomSpawnpoint();
     }
@@ -138,6 +140,7 @@ public class ClientPlayerManager : NetworkBehaviour
     #endregion
 
     #region RPC Calls
+
     [ServerRpc]
     void DespawnObjectServerRPC()
     {
@@ -151,10 +154,5 @@ public class ClientPlayerManager : NetworkBehaviour
         OnTankSpawn(spawnLocation, spawnRotation, clientID);
     }
 
-    [ClientRpc]
-    void NotfityClientsOfDeathClientRPC(ulong clientID)
-    {
-
-    }
     #endregion
 }

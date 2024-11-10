@@ -73,8 +73,6 @@ public class TankController : NetworkBehaviour
     {
         NetworkObject newProjectile = Instantiate(projectile, firePoint.position, firePoint.rotation).GetComponent<NetworkObject>();
         newProjectile.GetComponent<NetworkObject>().SpawnWithOwnership(OwnerClientId);
-        //This was causing compilation errors so I commented it out
-        //update. TOO BAD!
     }
 
     void Fire()

@@ -7,12 +7,17 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
 {
     public UnityEvent<ulong, ulong> DeathEvent = new UnityEvent<ulong, ulong>();
     public UnityEvent DeathSFX = new UnityEvent();
+
     public virtual void OnHit(ulong damager)
     {
         OnHitEventRpc(damager);
         OnDeathFxRPC();
     }
 
+    /// <summary>
+    /// event to tell server that a client tank has died
+    /// </summary>
+    /// <param name="damager">who killed this client</param>
     [Rpc(SendTo.Owner)]
     public void OnHitEventRpc(ulong damager)
     {
@@ -20,6 +25,9 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
         DeathEvent.Invoke(damager, OwnerClientId);
     }
 
+    /// <summary>
+    /// events for sound fx and vfx on client side
+    /// </summary>
     [Rpc(SendTo.Everyone)]
     public void OnDeathFxRPC()
     {
