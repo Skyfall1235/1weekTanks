@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -7,6 +6,7 @@ using UnityEngine;
 public class KillTracker : NetworkBehaviour
 {
     NetworkList<KillData> playerKillData = new NetworkList<KillData>();
+    DeathFeed DeathFeed;
 
 
     //tells the server theres a new kill and to add it to the kill track
@@ -15,27 +15,23 @@ public class KillTracker : NetworkBehaviour
     {
         Debug.Log("sending the server rpc to kill myself");
         Debug.Log($"{inflictor} killed {inflictee}");
-        playerKillData.Add(new KillData { inflictor = inflictor, inflictee = inflictee });
-    }
-
-    void Start()
-    {
-        //anon method to update ui based on list
-        //playerKillData.OnValueChanged += (previousValue, currentValue) => { UpdateUI(currentValue); };
+        KillData killData = new KillData(inflictor, inflictee);
+        playerKillData.Add(killData);
+        UpdateUIClientRPC(killData);
     }
 
     //in the need for a reset of UI, call this method to set the script up approriately client side
     [ClientRpc]
     void OnSceneLoadClientRPC()
     {
-        // Clear the UI or reset the kill data
-        UpdateUI(new List<KillData>());
+
     }
 
     //this should handle the ui script. that can be a dif object but it will need a link here.
-    void UpdateUI(List<KillData> currentKillData)
+    [ClientRpc]
+    void UpdateUIClientRPC(KillData LastKillData)
     {
-
+        DeathFeed.UpdateStack(LastKillData);
     }
 
     //who died, who killed them. we can compute team kills, deaths, and other stuff from this datum
@@ -43,6 +39,12 @@ public class KillTracker : NetworkBehaviour
     {
         public ulong inflictor;
         public ulong inflictee;
+
+        public KillData(ulong inflictor, ulong inflictee)
+        {
+            this.inflictor = inflictor;
+            this.inflictee = inflictee;
+        }
 
         public void NetworkSerialize<T>(BufferSerializer<T> serializer) where T : IReaderWriter
         {

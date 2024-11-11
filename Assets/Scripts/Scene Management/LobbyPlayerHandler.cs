@@ -7,7 +7,7 @@ public class LobbyPlayerHandler : NetworkBehaviour
 {
     // Store the incoming connections
     public NetworkVariable<Dictionary<ulong, FixedString32Bytes>> PlayerData = new NetworkVariable<Dictionary<ulong, FixedString32Bytes>>(new Dictionary<ulong, FixedString32Bytes>());
-    public string PlayerName;
+    public string PlayerName = "Default";
 
     private static bool eventsRegistered = false;
 
