@@ -41,6 +41,7 @@ public class ConnectionHandler : NetworkBehaviour
         yield return new WaitUntil(() => asyncLoadLvl1.isDone && asyncLoadNGO.isDone);
         //Fuck you unity
         yield return null;
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("Lvl1"));
         m_networkManager = (NetworkManager)FindFirstObjectByType(typeof(NetworkManager));
         if(nameInputField.text != string.Empty && ipInputField.text != string.Empty && portInputField.text != string.Empty)
         {
@@ -56,6 +57,7 @@ public class ConnectionHandler : NetworkBehaviour
         yield return new WaitUntil(() => asyncLoadLvl1.isDone && asyncLoadNGO.isDone);
         //Fuck you unity
         yield return null;
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("Lvl1"));
         m_networkManager = (NetworkManager)FindFirstObjectByType(typeof(NetworkManager));
         if(nameInputField.text != string.Empty && ipInputField.text != string.Empty && portInputField.text != string.Empty)
         {
