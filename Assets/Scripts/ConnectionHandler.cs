@@ -8,7 +8,7 @@ using TMPro;
 
 public class ConnectionHandler : NetworkBehaviour
 {
-    UnityEvent<string> ConnectionApprovedEvent;
+    UnityEvent<ulong, string> ConnectionApprovedEvent;
     NetworkManager m_networkManager;
     [SerializeField] TMP_InputField nameInputField;
     [SerializeField] TMP_InputField ipInputField;
@@ -22,13 +22,18 @@ public class ConnectionHandler : NetworkBehaviour
     }
     public void OnConnectButtonPressed()
     {
-        StartCoroutine(LoadSceneAndConnectionDataAsync());
+        StartCoroutine(LoadSceneAndConnectionDataForClientAsync());
+    }
+    public void OnHostButtonPressed()
+    {
+        StartCoroutine(LoadSceneAndConnectionDataForHostAsync());
     }
     void ClientApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        ConnectionApprovedRPC(request.Payload);
+        ConnectionApprovedRPC(request.ClientNetworkId, request.Payload);
+        response.Approved = true;
     }
-    IEnumerator LoadSceneAndConnectionDataAsync()
+    IEnumerator LoadSceneAndConnectionDataForClientAsync()
     {
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Lvl1", LoadSceneMode.Additive);
         yield return new WaitUntil(() => asyncLoad.isDone);
@@ -39,6 +44,17 @@ public class ConnectionHandler : NetworkBehaviour
         m_networkManager.gameObject.GetComponent<UnityTransport>().SetConnectionData(ipInputField.text, ushort.Parse(portInputField.text));
         m_networkManager.StartClient();
     }
+    IEnumerator LoadSceneAndConnectionDataForHostAsync()
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Lvl1", LoadSceneMode.Additive);
+        yield return new WaitUntil(() => asyncLoad.isDone);
+        //Fuck you unity
+        yield return null;
+        m_networkManager = (NetworkManager)FindFirstObjectByType(typeof(NetworkManager));
+        m_networkManager.NetworkConfig.ConnectionData = ToByteArray(nameInputField.text);
+        m_networkManager.gameObject.GetComponent<UnityTransport>().SetConnectionData(ipInputField.text, ushort.Parse(portInputField.text));
+        m_networkManager.StartHost();
+    }
     public static byte[] ToByteArray(string stringToConvert)
     {
         return System.Text.Encoding.UTF8.GetBytes(stringToConvert);
@@ -47,9 +63,9 @@ public class ConnectionHandler : NetworkBehaviour
     {
         return System.Text.Encoding.UTF8.GetString(bytesToConvert);
     }
-    [Rpc(SendTo.Everyone)]
-    public void ConnectionApprovedRPC(byte[] connectionPayload)
+    [Rpc(SendTo.Server)]
+    public void ConnectionApprovedRPC(ulong clientID, byte[] connectionPayload)
     {
-        ConnectionApprovedEvent.Invoke(ToString(connectionPayload));
+        ConnectionApprovedEvent.Invoke(clientID, ToString(connectionPayload));
     }
 }
