@@ -18,6 +18,7 @@ public class ConnectionHandler : NetworkBehaviour
         if(IsServer)
         {
             NetworkManager.ConnectionApprovalCallback = ClientApproval;
+            NetworkManager.OnClientConnectedCallback += OnClientConnected;
         }
     }
     public void OnConnectButtonPressed()
@@ -35,24 +36,34 @@ public class ConnectionHandler : NetworkBehaviour
     }
     IEnumerator LoadSceneAndConnectionDataForClientAsync()
     {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Lvl1", LoadSceneMode.Additive);
-        yield return new WaitUntil(() => asyncLoad.isDone);
+        AsyncOperation asyncLoadLvl1 = SceneManager.LoadSceneAsync("Lvl1", LoadSceneMode.Additive);
+        AsyncOperation asyncLoadNGO = SceneManager.LoadSceneAsync("NGO_Setup", LoadSceneMode.Additive);
+        yield return new WaitUntil(() => asyncLoadLvl1.isDone && asyncLoadNGO.isDone);
         //Fuck you unity
         yield return null;
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("Lvl1"));
         m_networkManager = (NetworkManager)FindFirstObjectByType(typeof(NetworkManager));
-        m_networkManager.NetworkConfig.ConnectionData = ToByteArray(nameInputField.text);
-        m_networkManager.gameObject.GetComponent<UnityTransport>().SetConnectionData(ipInputField.text, ushort.Parse(portInputField.text));
+        if(nameInputField.text != string.Empty && ipInputField.text != string.Empty && portInputField.text != string.Empty)
+        {
+            m_networkManager.NetworkConfig.ConnectionData = ToByteArray(nameInputField.text);
+            m_networkManager.gameObject.GetComponent<UnityTransport>().SetConnectionData(ipInputField.text, ushort.Parse(portInputField.text));
+        }
         m_networkManager.StartClient();
     }
     IEnumerator LoadSceneAndConnectionDataForHostAsync()
     {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Lvl1", LoadSceneMode.Additive);
-        yield return new WaitUntil(() => asyncLoad.isDone);
+        AsyncOperation asyncLoadLvl1 = SceneManager.LoadSceneAsync("Lvl1", LoadSceneMode.Additive);
+        AsyncOperation asyncLoadNGO = SceneManager.LoadSceneAsync("NGO_Setup", LoadSceneMode.Additive);
+        yield return new WaitUntil(() => asyncLoadLvl1.isDone && asyncLoadNGO.isDone);
         //Fuck you unity
         yield return null;
+        SceneManager.SetActiveScene(SceneManager.GetSceneByName("Lvl1"));
         m_networkManager = (NetworkManager)FindFirstObjectByType(typeof(NetworkManager));
-        m_networkManager.NetworkConfig.ConnectionData = ToByteArray(nameInputField.text);
-        m_networkManager.gameObject.GetComponent<UnityTransport>().SetConnectionData(ipInputField.text, ushort.Parse(portInputField.text));
+        if(nameInputField.text != string.Empty && ipInputField.text != string.Empty && portInputField.text != string.Empty)
+        {
+            m_networkManager.NetworkConfig.ConnectionData = ToByteArray(nameInputField.text);
+            m_networkManager.gameObject.GetComponent<UnityTransport>().SetConnectionData(ipInputField.text, ushort.Parse(portInputField.text));
+        }
         m_networkManager.StartHost();
     }
     public static byte[] ToByteArray(string stringToConvert)
@@ -66,6 +77,10 @@ public class ConnectionHandler : NetworkBehaviour
     [Rpc(SendTo.Server)]
     public void ConnectionApprovedRPC(ulong clientID, byte[] connectionPayload)
     {
-        ConnectionApprovedEvent.Invoke(clientID, ToString(connectionPayload));
+        ConnectionApprovedEvent?.Invoke(clientID, ToString(connectionPayload));
+    }
+    void OnClientConnected(ulong clientConnected)
+    {
+        SceneManager.UnloadSceneAsync("Title Scene");
     }
 }
