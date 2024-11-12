@@ -6,7 +6,7 @@ using UnityEngine.Events;
 public class NetworkedHealth : NetworkBehaviour, IDamagable
 {
     public UnityEvent<ulong, ulong> DeathEvent = new UnityEvent<ulong, ulong>();
-    public UnityEvent DeathSFX = new UnityEvent();
+    public UnityEvent DeathVFX = new UnityEvent();
     public AudioClip deathExplosion;
 
     public virtual void OnHit(ulong damager)
@@ -32,18 +32,25 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
     [Rpc(SendTo.Everyone)]
     public void OnDeathFxRPC()
     {
-        DeathSFX.Invoke();
+        DeathVFX.Invoke();
         CreateAndPlaceAudioObject(deathExplosion);
     }
 
     void CreateAndPlaceAudioObject(AudioClip clip)
     {
-        GameObject audioObj = Instantiate(new GameObject());
-        audioObj.transform.parent = null;
+        GameObject audioObj = Instantiate(new GameObject("audio"));
         AudioSource source = audioObj.AddComponent<AudioSource>();
         source.clip = clip;
         source.Play();
+        StartCoroutine(destroyObjectOnDelay());
+
+        IEnumerator destroyObjectOnDelay()
+        { 
+            yield return new WaitForSeconds(12f);
+            Destroy(audioObj);
+        }
     }
+
 
 
 }
