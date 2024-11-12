@@ -23,6 +23,10 @@ public class ConnectionHandler : NetworkBehaviour
             NetworkManager.ConnectionApprovalCallback = ClientApproval;
             NetworkManager.OnClientConnectedCallback += OnClientConnected;
         }
+        if(IsOwner)
+        {
+            NetworkManager.OnClientDisconnectCallback += OnDisconnected;
+        }
         DontDestroyOnLoad(gameObject);
     }
 
@@ -96,14 +100,21 @@ public class ConnectionHandler : NetworkBehaviour
         SceneManager.UnloadSceneAsync("Title Scene");
     }
 
+    void OnDisconnected(ulong clientConnected)
+    {
+        StartCoroutine(ReturnToMainMenu());
+    }
+
     void OnClientForceDisconnect(ulong clientConnected)
     {
+        
         StartCoroutine(ReturnToMainMenu(PostError("Connection Lost")));
     }
 
     IEnumerator ReturnToMainMenu(IEnumerator optionalSequence = null)
     {
-        SceneManager.LoadSceneAsync("Title Scene", LoadSceneMode.Single);
+        NetworkManager.Shutdown(true);
+        SceneManager.LoadScene("Title Scene", LoadSceneMode.Single);
         yield return null;
         if (optionalSequence != null)
         {
