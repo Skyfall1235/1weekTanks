@@ -48,7 +48,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3396024546
+  GlobalObjectIdHash: 2194917463
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -75,7 +75,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   playerPrefab: {fileID: 7564236676250682404, guid: eef12de941faed34185d58066e0d4b60, type: 3}
-  respawnTime: 2
+  DestroyDelay: 5
   spawnCheckBoxHalfExtents: {x: 0.5, y: 0.25, z: 0.5}
 --- !u!114 &-3539166695097288709
 MonoBehaviour:
@@ -121,4 +121,4 @@ MonoBehaviour:
   canvas: {fileID: 0}
   KillFeedPrefab: {fileID: 1977790256972635006, guid: a22d889c42889f44db59d7ca2424542d, type: 3}
   playerHandler: {fileID: -3539166695097288709}
-  feedItemDestroyDelay: 3
+  feedItemDestroyDelay: 4

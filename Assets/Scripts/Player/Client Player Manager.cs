@@ -9,7 +9,7 @@ public class ClientPlayerManager : NetworkBehaviour
     [SerializeField] GameObject playerPrefab;
     public NetworkVariable<NetworkObjectReference> currentTank = new(writePerm: NetworkVariableWritePermission.Server);
     List<GameObject> spawnPositions = new List<GameObject>();
-    [SerializeField] float respawnTime =  2;
+    [SerializeField] float DestroyDelay = 2f;
     bool canRespawn = true;
     [SerializeField]Vector3 spawnCheckBoxHalfExtents = new Vector3(.5f, .25f, .5f);
 
@@ -71,15 +71,16 @@ public class ClientPlayerManager : NetworkBehaviour
 
     IEnumerator KillTankAfterDelay(ulong inflictee)
     {
-        const float DEATH_DELAY = 2.5f;
-        yield return new WaitForSeconds(DEATH_DELAY); // :)
+        yield return new WaitForSeconds(DestroyDelay);
         DespawnTank();
         StartCoroutine(RespawnTankAfterTime());
     }
 
     IEnumerator RespawnTankAfterTime()
     {
-        yield return new WaitForSeconds(respawnTime);
+        
+        const float DEATH_DELAY = 2.5f;
+        yield return new WaitForSeconds(DEATH_DELAY); // :)
         yield return SpawnTankAtRandomSpawnpoint();
     }
 
