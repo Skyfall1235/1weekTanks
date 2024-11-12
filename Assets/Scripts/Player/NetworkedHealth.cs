@@ -51,6 +51,4 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
         }
     }
 
-
-
 }

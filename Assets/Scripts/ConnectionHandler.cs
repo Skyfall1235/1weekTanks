@@ -30,6 +30,7 @@ public class ConnectionHandler : NetworkBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
+    #region buttons
     public void OnConnectButtonPressed()
     {
         StartCoroutine(LoadSceneAndConnectionDataForClientAsync());
@@ -44,6 +45,7 @@ public class ConnectionHandler : NetworkBehaviour
     {
         StartCoroutine(ReturnToMainMenu());
     }
+    #endregion
 
     void ClientApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
@@ -54,12 +56,14 @@ public class ConnectionHandler : NetworkBehaviour
     IEnumerator LoadSceneAndConnectionDataForClientAsync()
     {
         yield return LoadSceneAndConnectionData();
+        SceneManager.UnloadSceneAsync("Title Scene");
         m_networkManager.StartClient();
     }
 
     IEnumerator LoadSceneAndConnectionDataForHostAsync()
     {
         yield return LoadSceneAndConnectionData();
+        SceneManager.UnloadSceneAsync("Title Scene");
         m_networkManager.StartHost();
     }
 
@@ -107,7 +111,6 @@ public class ConnectionHandler : NetworkBehaviour
 
     void OnClientForceDisconnect(ulong clientConnected)
     {
-        
         StartCoroutine(ReturnToMainMenu(PostError("Connection Lost")));
     }
 
@@ -122,6 +125,7 @@ public class ConnectionHandler : NetworkBehaviour
         }
     }
 
+    #region error stuff
     IEnumerator PostError(string message)
     {
         ErrorHandler.SetActive(true);
@@ -135,4 +139,5 @@ public class ConnectionHandler : NetworkBehaviour
         StopCoroutine(errorCoroutine);
         ErrorHandler.SetActive(false);
     }
+    #endregion
 }
