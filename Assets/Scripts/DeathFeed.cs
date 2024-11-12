@@ -19,7 +19,7 @@ public class DeathFeed : NetworkBehaviour
     LobbyPlayerHandler playerHandler;
 
     [SerializeField]
-    float feedItemDestroyDelay = 3f;
+    float feedItemDestroyDelay = 10f;
 
     public override void OnNetworkSpawn()
     {

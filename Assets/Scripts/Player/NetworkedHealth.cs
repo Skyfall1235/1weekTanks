@@ -7,6 +7,7 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
 {
     public UnityEvent<ulong, ulong> DeathEvent = new UnityEvent<ulong, ulong>();
     public UnityEvent DeathSFX = new UnityEvent();
+    public AudioClip deathExplosion;
 
     public virtual void OnHit(ulong damager)
     {
@@ -32,6 +33,15 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
     public void OnDeathFxRPC()
     {
         DeathSFX.Invoke();
+        CreateAndPlaceAudioObject(deathExplosion);
+    }
+
+    void CreateAndPlaceAudioObject(AudioClip clip)
+    {
+        GameObject audioObj = Instantiate(new GameObject());
+        AudioSource source = audioObj.AddComponent<AudioSource>();
+        source.clip = clip;
+        source.Play();
     }
 
 
