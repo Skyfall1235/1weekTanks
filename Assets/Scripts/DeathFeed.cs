@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.Collections;
 using Unity.Netcode;
@@ -20,9 +21,10 @@ public class DeathFeed : NetworkBehaviour
     [SerializeField]
     float feedItemDestroyDelay = 3f;
 
-    private void Update()
+    public override void OnNetworkSpawn()
     {
-        
+        base.OnNetworkSpawn();
+        canvas = GameObject.FindGameObjectWithTag("KillFeed");
     }
 
     public void UpdateStack(KillData incomingData)
@@ -64,7 +66,7 @@ public class DeathFeed : NetworkBehaviour
     {
         //setup prefab
         GameObject kfObject = Instantiate(KillFeedPrefab);
-        Transform parentOfTexts = kfObject.GetComponentInChildren<Transform>();
+        Transform parentOfTexts = kfObject.transform.GetChild(0);
         TMP_Text killerTitle = parentOfTexts.GetChild(0).GetComponent<TMP_Text>();
         TMP_Text victimTitle = parentOfTexts.GetChild(1).GetComponent<TMP_Text>();
 

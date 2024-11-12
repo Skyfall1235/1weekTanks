@@ -6,6 +6,7 @@ using UnityEngine;
 public class KillTracker : NetworkBehaviour
 {
     NetworkList<KillData> playerKillData = new NetworkList<KillData>();
+    [SerializeField]
     DeathFeed DeathFeed;
 
 

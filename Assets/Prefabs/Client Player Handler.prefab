@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 8707959941632511078}
   - component: {fileID: -3539166695097288709}
   - component: {fileID: 4583406823861903268}
+  - component: {fileID: 8451663629211795415}
   m_Layer: 0
   m_Name: Client Player Handler
   m_TagString: Untagged
@@ -103,3 +104,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
+  DeathFeed: {fileID: 8451663629211795415}
+--- !u!114 &8451663629211795415
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1303124068377314551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 54b909d346984f340adf1dafffb360f7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ShowTopMostFoldoutHeaderGroup: 1
+  canvas: {fileID: 0}
+  KillFeedPrefab: {fileID: 1977790256972635006, guid: a22d889c42889f44db59d7ca2424542d, type: 3}
+  playerHandler: {fileID: -3539166695097288709}
+  feedItemDestroyDelay: 3
