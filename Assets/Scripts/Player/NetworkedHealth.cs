@@ -39,6 +39,7 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
     void CreateAndPlaceAudioObject(AudioClip clip)
     {
         GameObject audioObj = Instantiate(new GameObject());
+        audioObj.transform.parent = null;
         AudioSource source = audioObj.AddComponent<AudioSource>();
         source.clip = clip;
         source.Play();
