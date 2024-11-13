@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class MainMenuUICOntroller : MonoBehaviour
+public class MainMenuUIController : MonoBehaviour
 {
     
 }

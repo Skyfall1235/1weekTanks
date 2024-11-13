@@ -33,6 +33,8 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
     public void OnDeathFxRPC()
     {
         DeathVFX.Invoke();
+        Destroy(this);
+        this.GetComponent<Collider>().enabled = false;
         CreateAndPlaceAudioObject(deathExplosion);
     }
 
@@ -42,13 +44,7 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
         AudioSource source = audioObj.AddComponent<AudioSource>();
         source.clip = clip;
         source.Play();
-        StartCoroutine(destroyObjectOnDelay());
-
-        IEnumerator destroyObjectOnDelay()
-        { 
-            yield return new WaitForSeconds(12f);
-            Destroy(audioObj);
-        }
     }
 
 }
+
