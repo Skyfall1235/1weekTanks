@@ -31,7 +31,6 @@ public class TankTurretRotation : NetworkBehaviour
     void Awake()
     {
         playerInputActions = new PlayerInputActions();
-        cameraForAim = Camera.main;
         if(IsOwner)
         {
             lastAngle = (short)transform.rotation.eulerAngles.y;
@@ -40,6 +39,7 @@ public class TankTurretRotation : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
+        cameraForAim = Camera.main;
     }
 
 
