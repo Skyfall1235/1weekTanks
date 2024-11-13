@@ -33,22 +33,6 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
     public void OnDeathFxRPC()
     {
         DeathVFX.Invoke();
-        CreateAndPlaceAudioObject(deathExplosion);
+        SoundManager.instance?.PlaySound(transform.position, SoundManager.instance.FindSoundInfoByName("Death"));
     }
-
-    void CreateAndPlaceAudioObject(AudioClip clip)
-    {
-        GameObject audioObj = Instantiate(new GameObject("audio"));
-        AudioSource source = audioObj.AddComponent<AudioSource>();
-        source.clip = clip;
-        source.Play();
-        StartCoroutine(destroyObjectOnDelay());
-
-        IEnumerator destroyObjectOnDelay()
-        { 
-            yield return new WaitForSeconds(12f);
-            Destroy(audioObj);
-        }
-    }
-
 }
