@@ -7,7 +7,8 @@ public class Projectile : NetworkBehaviour
 {
     Rigidbody rb;
     float timeBeforeDespawn = 2;
-    float projectileSpeed = 10;
+    [SerializeField]
+    float projectileSpeed = 30;
     private void Awake()
     {
         rb = GetComponent<Rigidbody>();    
@@ -18,6 +19,7 @@ public class Projectile : NetworkBehaviour
         base.OnNetworkSpawn();
         rb.AddForce(transform.forward * projectileSpeed, ForceMode.Impulse);
         StartCoroutine(DespawnAfterTime());
+        ShootRPC();
     }
 
     IEnumerator DespawnAfterTime()
@@ -69,5 +71,11 @@ public class Projectile : NetworkBehaviour
             collided.OnHit(OwnerClientId);
         }
         DespawnProjectile();
+    }
+
+    [Rpc(SendTo.Everyone)]
+    public void ShootRPC()
+    {
+        SoundManager.instance?.PlaySound(transform.position, SoundManager.instance.FindSoundInfoByName("ProjectileFire"));
     }
 }

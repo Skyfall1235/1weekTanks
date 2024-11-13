@@ -35,6 +35,7 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
         DeathVFX.Invoke();
         Destroy(this);
         this.GetComponent<Collider>().enabled = false;
+        this.transform.GetChild(0).GetComponent<MeshRenderer>().enabled = false;
         SoundManager.instance?.PlaySound(transform.position, SoundManager.instance.FindSoundInfoByName("Death"));
     }
 }

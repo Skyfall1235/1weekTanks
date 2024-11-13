@@ -140,7 +140,7 @@ public class SoundManager : MonoBehaviour
     }
     GameObject OnCreateSound()
     {
-        return new GameObject("Sound", typeof(AudioSource), typeof(SphereCollider));
+        return new GameObject("Sound", typeof(AudioSource));
     }
     void OnGetFromPool(GameObject objectFromPool)
     {
