@@ -35,16 +35,7 @@ public class NetworkedHealth : NetworkBehaviour, IDamagable
         DeathVFX.Invoke();
         Destroy(this);
         this.GetComponent<Collider>().enabled = false;
-        CreateAndPlaceAudioObject(deathExplosion);
+        SoundManager.instance?.PlaySound(transform.position, SoundManager.instance.FindSoundInfoByName("Death"));
     }
-
-    void CreateAndPlaceAudioObject(AudioClip clip)
-    {
-        GameObject audioObj = Instantiate(new GameObject("audio"));
-        AudioSource source = audioObj.AddComponent<AudioSource>();
-        source.clip = clip;
-        source.Play();
-    }
-
 }
 
