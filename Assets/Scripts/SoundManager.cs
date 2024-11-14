@@ -87,7 +87,7 @@ public class SoundManager : MonoBehaviour
         AudioSource source = SetupSound(sound, soundInfo);
 
         source.Play();
-        Debug.Log(source.isPlaying);
+        //Debug.Log(source.isPlaying);
         return sound;
     }
     /// <summary>

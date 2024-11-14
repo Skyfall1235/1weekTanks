@@ -14,8 +14,8 @@ public class KillTracker : NetworkBehaviour
     [ServerRpc]
     public void SendKillServerRPC(ulong inflictor, ulong inflictee)
     {
-        Debug.Log("sending the server rpc to kill myself");
-        Debug.Log($"{inflictor} killed {inflictee}");
+        //Debug.Log("sending the server rpc to kill myself");
+        //Debug.Log($"{inflictor} killed {inflictee}");
         KillData killData = new KillData(inflictor, inflictee);
         playerKillData.Add(killData);
         UpdateUIClientRPC(killData);
