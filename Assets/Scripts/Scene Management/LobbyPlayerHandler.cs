@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using Unity.Collections;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class LobbyPlayerHandler : NetworkBehaviour
 {
@@ -79,6 +81,14 @@ public class LobbyPlayerHandler : NetworkBehaviour
         //this is another debug to ensure i am getting the string into the dictionary and getting it appropriately
         PlayerData.Value.TryGetValue(clientId, out convertedString);
         Debug.Log(convertedString.ToString());
+    }
+
+    private void SetSelfUsername(string userName, ulong clientId)
+    {
+        if (PlayerData.Value.ContainsKey(clientId))
+        {
+            PlayerData.Value[clientId] = userName;
+        }
     }
 
     private void RemoveClientUserName(ulong clientId)

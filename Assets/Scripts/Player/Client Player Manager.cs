@@ -21,6 +21,7 @@ public class ClientPlayerManager : NetworkBehaviour
         if(IsOwner)
         {
             spawnPositions = GameObject.FindGameObjectsWithTag("Spawn").ToList();
+            Debug.Log(spawnPositions.Count);
             StartCoroutine(SpawnTankAtRandomSpawnpoint());
         }
     }
@@ -40,6 +41,7 @@ public class ClientPlayerManager : NetworkBehaviour
     {
         Vector3 currentSpawnPosition = transform.position;
         Quaternion currentSpawnRotation = transform.rotation;
+        Debug.Log(spawnPositions.Count);
         List<GameObject> uncheckedSpawnPositions = new List<GameObject>(spawnPositions);
         while(uncheckedSpawnPositions.Count > 0)
         {
