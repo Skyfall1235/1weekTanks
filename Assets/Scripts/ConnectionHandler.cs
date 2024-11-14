@@ -6,7 +6,7 @@ using System.Collections;
 using Unity.Netcode.Transports.UTP;
 using TMPro;
 
-public class ConnectionHandler : NetworkBehaviour
+public class ConnectionHandler : MonoBehaviour
 {
     UnityEvent<ulong, string> ConnectionApprovedEvent;
     NetworkManager m_networkManager;
@@ -16,17 +16,8 @@ public class ConnectionHandler : NetworkBehaviour
     [SerializeField] GameObject ErrorHandler;
     [SerializeField] float errorDelay;
     Coroutine errorCoroutine;
-    public override void OnNetworkSpawn()
+    void Awake()
     {
-        if(IsServer)
-        {
-            NetworkManager.ConnectionApprovalCallback = ClientApproval;
-            NetworkManager.OnClientConnectedCallback += OnClientConnected;
-        }
-        if(IsOwner)
-        {
-            NetworkManager.OnClientDisconnectCallback += OnDisconnected;
-        }
         DontDestroyOnLoad(gameObject);
     }
 
@@ -49,19 +40,32 @@ public class ConnectionHandler : NetworkBehaviour
 
     void ClientApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        ConnectionApprovedRPC(request.ClientNetworkId, request.Payload);
-        response.Approved = true;
+        if(ToString(request.Payload) != string.Empty)
+        {
+            response.Approved = true;
+            response.CreatePlayerObject = true;
+            ConnectionApprovedRPC(request.ClientNetworkId, request.Payload);
+        }
+        else
+        {
+            response.Reason = "Name cannot be empty";
+        }
+        response.Pending = false;
     }
 
     IEnumerator LoadSceneAndConnectionDataForClientAsync()
     {
         yield return LoadSceneAndConnectionData();
+        m_networkManager.OnClientDisconnectCallback += OnDisconnected;
         m_networkManager.StartClient();
     }
 
     IEnumerator LoadSceneAndConnectionDataForHostAsync()
     {
         yield return LoadSceneAndConnectionData();
+        m_networkManager.ConnectionApprovalCallback = ClientApproval;
+        m_networkManager.OnClientConnectedCallback += OnClientConnected;
+        m_networkManager.OnClientDisconnectCallback += OnDisconnected;
         m_networkManager.StartHost();
     }
 
@@ -99,12 +103,18 @@ public class ConnectionHandler : NetworkBehaviour
 
     void OnClientConnected(ulong clientConnected)
     {
-        SceneManager.UnloadSceneAsync("Title Scene");
+        if(clientConnected == m_networkManager.LocalClientId)
+        {
+            SceneManager.UnloadSceneAsync("Title Scene");
+        }
     }
 
     void OnDisconnected(ulong clientConnected)
     {
-        StartCoroutine(ReturnToMainMenu());
+        if(clientConnected == m_networkManager.LocalClientId)
+        {
+            StartCoroutine(ReturnToMainMenu());
+        }
     }
 
     void OnClientForceDisconnect(ulong clientConnected)
@@ -114,7 +124,8 @@ public class ConnectionHandler : NetworkBehaviour
 
     IEnumerator ReturnToMainMenu(IEnumerator optionalSequence = null)
     {
-        NetworkManager.Shutdown(true);
+        m_networkManager = (NetworkManager)FindFirstObjectByType(typeof(NetworkManager));
+        m_networkManager.Shutdown(true);
         SceneManager.LoadScene("Title Scene", LoadSceneMode.Single);
         yield return null;
         if (optionalSequence != null)
