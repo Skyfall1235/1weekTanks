@@ -40,11 +40,12 @@ public class ConnectionHandler : MonoBehaviour
 
     void ClientApproval(NetworkManager.ConnectionApprovalRequest request, NetworkManager.ConnectionApprovalResponse response)
     {
-        if(ToString(request.Payload) != string.Empty)
+        string payload = ToString(request.Payload);
+        if(payload != string.Empty)
         {
             response.Approved = true;
             response.CreatePlayerObject = true;
-            ConnectionApprovedRPC(request.ClientNetworkId, request.Payload);
+            ConnectionApprovedEvent.Invoke(request.ClientNetworkId, payload);
         }
         else
         {
@@ -93,12 +94,6 @@ public class ConnectionHandler : MonoBehaviour
     public static string ToString(byte[] bytesToConvert)
     {
         return System.Text.Encoding.UTF8.GetString(bytesToConvert);
-    }
-
-    [Rpc(SendTo.Server)]
-    public void ConnectionApprovedRPC(ulong clientID, byte[] connectionPayload)
-    {
-        ConnectionApprovedEvent?.Invoke(clientID, ToString(connectionPayload));
     }
 
     void OnClientConnected(ulong clientConnected)
