@@ -48,11 +48,11 @@
 
         float3 ToonGlobalIllumination(ToonLightingData lightingData)
         {
-            float3 indirectDiffuse = Quantize01(lightingData.albedo * lightingData.bakedGI * lightingData.ambientOcclusion, 90);
+            float3 indirectDiffuse = Quantize(float4(lightingData.albedo * lightingData.bakedGI * lightingData.ambientOcclusion, 1), 90).xyz;
             float3 reflectVector = reflect(-lightingData.worldSpaceViewDirection, lightingData.worldSpaceNormals);
             float fresnel = Pow4(1 - saturate(dot(lightingData.worldSpaceViewDirection, lightingData. worldSpaceNormals)));
-            float3 indirectSpecular = Quantize01(GlossyEnvironmentReflection(reflectVector, RoughnessToPerceptualRoughness(1 - lightingData.smoothness), lightingData.ambientOcclusion) * fresnel, 10) * lightingData.specularTint;
-            return indirectDiffuse + indirectSpecular;
+            float3 indirectSpecular = Quantize(float4(GlossyEnvironmentReflection(reflectVector, RoughnessToPerceptualRoughness(1 - lightingData.smoothness), lightingData.ambientOcclusion) * fresnel, 1), 10) * lightingData.specularTint;
+            return indirectDiffuse;
         }
     #endif
         float3 CalculateToonLighting(ToonLightingData incomingLightingData)
