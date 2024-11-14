@@ -45,7 +45,7 @@ public class ConnectionHandler : MonoBehaviour
         {
             response.Approved = true;
             response.CreatePlayerObject = true;
-            ConnectionApprovedEvent.Invoke(request.ClientNetworkId, payload);
+            ConnectionApprovedEvent?.Invoke(request.ClientNetworkId, payload);
         }
         else
         {
@@ -57,6 +57,7 @@ public class ConnectionHandler : MonoBehaviour
     IEnumerator LoadSceneAndConnectionDataForClientAsync()
     {
         yield return LoadSceneAndConnectionData();
+        m_networkManager.OnClientConnectedCallback += OnClientConnected;
         m_networkManager.OnClientDisconnectCallback += OnDisconnected;
         m_networkManager.OnClientConnectedCallback += OnClientConnected;
         m_networkManager.StartClient();
@@ -99,7 +100,7 @@ public class ConnectionHandler : MonoBehaviour
 
     void OnClientConnected(ulong clientConnected)
     {
-        if(clientConnected == m_networkManager.LocalClientId)
+        if(SceneManager.GetSceneByName("Title Scene").isLoaded)
         {
             SceneManager.UnloadSceneAsync("Title Scene");
         }
