@@ -56,14 +56,12 @@ public class ConnectionHandler : NetworkBehaviour
     IEnumerator LoadSceneAndConnectionDataForClientAsync()
     {
         yield return LoadSceneAndConnectionData();
-        SceneManager.UnloadSceneAsync("Title Scene");
         m_networkManager.StartClient();
     }
 
     IEnumerator LoadSceneAndConnectionDataForHostAsync()
     {
         yield return LoadSceneAndConnectionData();
-        SceneManager.UnloadSceneAsync("Title Scene");
         m_networkManager.StartHost();
     }
 
