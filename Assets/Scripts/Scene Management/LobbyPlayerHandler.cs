@@ -20,6 +20,12 @@ public class LobbyPlayerHandler : NetworkBehaviour
         {
             NetworkManager.Singleton.OnConnectionEvent += OnClientConnected;
             NetworkManager.Singleton.OnConnectionEvent += OnClientDisconnected;
+            ConnectionHandler newHandler = FindAnyObjectByType<ConnectionHandler>();
+            if (newHandler != null)
+            {
+                Debug.Log($"found handler");
+                newHandler.ConnectionApprovedEvent.AddListener(SetSelfUsername);
+            }
             eventsRegistered = true;
         }
     }
@@ -62,7 +68,7 @@ public class LobbyPlayerHandler : NetworkBehaviour
         }
 
         //debug to see what client is joining
-        Debug.Log($"{OwnerClientId} called this method!");
+        //Debug.Log($"{OwnerClientId} called this method!");
         //convert a string that we get from other code into a fixed string to pass later
         FixedString32Bytes convertedString = new FixedString32Bytes(userName);
             
@@ -80,14 +86,16 @@ public class LobbyPlayerHandler : NetworkBehaviour
             
         //this is another debug to ensure i am getting the string into the dictionary and getting it appropriately
         PlayerData.Value.TryGetValue(clientId, out convertedString);
-        Debug.Log(convertedString.ToString());
+        //Debug.Log(convertedString.ToString());
     }
 
-    private void SetSelfUsername(string userName, ulong clientId)
+    private void SetSelfUsername(ulong clientId, string userName)
     {
+        Debug.Log($"Setting new username {userName}");
         if (PlayerData.Value.ContainsKey(clientId))
         {
             PlayerData.Value[clientId] = userName;
+            PlayerData.CheckDirtyState();
         }
     }
 

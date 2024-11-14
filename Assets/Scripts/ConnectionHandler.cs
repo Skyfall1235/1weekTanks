@@ -8,7 +8,7 @@ using TMPro;
 
 public class ConnectionHandler : MonoBehaviour
 {
-    UnityEvent<ulong, string> ConnectionApprovedEvent;
+    public UnityEvent<ulong, string> ConnectionApprovedEvent;
     NetworkManager m_networkManager;
     [SerializeField] TMP_InputField nameInputField;
     [SerializeField] TMP_InputField ipInputField;
@@ -59,6 +59,7 @@ public class ConnectionHandler : MonoBehaviour
         yield return LoadSceneAndConnectionData();
         m_networkManager.OnClientConnectedCallback += OnClientConnected;
         m_networkManager.OnClientDisconnectCallback += OnDisconnected;
+        m_networkManager.OnClientConnectedCallback += OnClientConnected;
         m_networkManager.StartClient();
     }
 
