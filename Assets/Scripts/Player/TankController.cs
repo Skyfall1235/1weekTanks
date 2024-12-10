@@ -19,6 +19,7 @@ public class TankController : NetworkBehaviour
         playerInputActions = new PlayerInputActions();
         rb = GetComponent<Rigidbody>();
     }
+
     void OnEnable()
     {
         move = playerInputActions.Player.Move;
@@ -28,11 +29,13 @@ public class TankController : NetworkBehaviour
         fire.Enable();
         fire.performed += Shoot;
     }
+
     void OnDisable()
     {
         move.Disable();
         fire.Disable();
     }
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -41,10 +44,12 @@ public class TankController : NetworkBehaviour
             Camera.main.GetComponent<CameraFollow>().objectToFollow = gameObject.transform;
         }
     }
+
     void Shoot(InputAction.CallbackContext context)
     {
         Fire();
     }
+
     private void FixedUpdate() 
     {
         if(!IsOwner)
